@@ -1,8 +1,10 @@
 import pool from "../config/db.js";
 
 export const findAll = async () => {
-  const sql = "SELECT * FROM projects ORDER BY created_at DESC";
-  const [rows] = await pool.query(sql); // va envoyer la requête à la db 
+  // Les projets mis en avant (is_featured) remontent toujours en premier,
+  // puis tri du plus récent au plus ancien.
+  const sql = "SELECT * FROM projects ORDER BY is_featured DESC, created_at DESC";
+  const [rows] = await pool.query(sql); // va envoyer la requête à la db
   // rows est déjà un tableau, vide s'il n'y a rien
   return rows; // tous les projets dans la db
 };
@@ -19,17 +21,18 @@ export const findById = async (id) => {
 
 
 // Créer un projet
-export const create = async (data) => {
-  const { title, description, tech_stack, github_url, demo_url, image_url } = data; // destruration 
-  
+export const create = async (userId, data) => {
+  const { title, description, tech_stack, github_url, demo_url, image_url } = data; // destruration
+
   const sql = `
-    INSERT INTO projects (title, description, tech_stack, github_url, demo_url, image_url) 
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO projects (user_id, title, description, tech_stack, github_url, demo_url, image_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
-  
+
   const [result] = await pool.query(sql, [
-    title, 
-    description || null, // optionnel 
+    userId, // récupéré depuis le token JWT (req.user.id), jamais depuis le corps de la requête
+    title,
+    description || null, // optionnel
     tech_stack || null,  // optionnel
     github_url || null,  // optionnel
     demo_url || null,  // optionnel

@@ -14,11 +14,12 @@ export const getProjectById = async (req, res) => {
   res.status(200).json(project);
 };
 
-// créer un projet 
+// créer un projet
 export const createProject = async (req, res) => {
-  // On passe tout le corps de la requête au service
-  const newProject = await projectService.createProject(req.body);
-  
+  // req.user vient du middleware authenticate (payload du JWT) : on ne fait
+  // jamais confiance à un user_id envoyé par le client dans req.body.
+  const newProject = await projectService.createProject(req.user.id, req.body);
+
   res.status(201).json(newProject);
 };
 

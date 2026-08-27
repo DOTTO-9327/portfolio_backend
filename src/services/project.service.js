@@ -18,10 +18,10 @@ export const getProjectById = async (id) => {
 };
 
 
-// créer un projet 
-export const createProject = async (projectData) => {
+// créer un projet
+export const createProject = async (userId, projectData) => {
   // Ici, on pourrait ajouter une logique métier (ex: vérifier si le titre existe déjà)
-  return await projectModel.create(projectData);
+  return await projectModel.create(userId, projectData);
 };
 
 // Modifier un projet 
